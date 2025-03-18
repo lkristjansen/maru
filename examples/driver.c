@@ -10,6 +10,7 @@
 #define PIPE_WRITE 1
 
 static int failures = 0;
+static int passes = 0;
 
 void run_example(const char *infile, const char *expected)
 {
@@ -60,7 +61,10 @@ void run_example(const char *infile, const char *expected)
     close(fd[PIPE_READ]);
 
     if (strncmp(expected, buf, strlen(expected)) == 0)
+    {
+      passes += 1;
       printf("PASSED\n");
+    }
     else
     {
       failures += 1;
@@ -106,5 +110,12 @@ int main()
   run_example("examples/unary_primitives/is_char_bool.l", "#f");
   run_example("examples/unary_primitives/is_char_nil.l", "#f");
 
-  return failures;
+  printf("\nTotal: %d, Passed: %d, Failed: %d\n", failures + passes, passes, failures);
+
+  if (failures != 0)
+    printf("\nFAILURE\n");
+  else
+    printf("\nSUCCESS\n");
+
+  return failures != 0;
 }
