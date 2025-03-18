@@ -19,7 +19,7 @@ void run_example(const char *infile, const char *expected)
   pid_t pid = fork();
   if (pid == 0)
   {
-    execl("bin/maru","bin/maru", "-o", "bin/example.s", infile, NULL);
+    execl("bin/maru", "bin/maru", "-o", "bin/example.s", infile, NULL);
     exit(EXIT_FAILURE);
   }
   else
@@ -55,8 +55,8 @@ void run_example(const char *infile, const char *expected)
     wait(NULL);
 
     char buf[1024] = {0};
-    read(fd[PIPE_READ], buf, sizeof(buf)-1);
-    
+    read(fd[PIPE_READ], buf, sizeof(buf) - 1);
+
     close(fd[PIPE_READ]);
 
     if (strncmp(expected, buf, strlen(expected)) == 0)
@@ -81,9 +81,30 @@ int main()
   run_example("examples/immediate/false.l", "#f");
   run_example("examples/immediate/char.l", "'d'");
 
-  printf("\n== RUNNING examples/primitive ==\n");
-  run_example("examples/unary_primitives/is_zero_true.l", "#t");
-  run_example("examples/unary_primitives/is_zero_false.l", "#f");
-  
+  printf("\n== RUNNING examples/unary_primitive ==\n");
+  run_example("examples/unary_primitives/is_zero_fixnum_true.l", "#t");
+  run_example("examples/unary_primitives/is_zero_fixnum_false.l", "#f");
+  run_example("examples/unary_primitives/is_null_true.l", "#t");
+  run_example("examples/unary_primitives/is_null_fixnum.l", "#f");
+  run_example("examples/unary_primitives/is_null_bool.l", "#f");
+  run_example("examples/unary_primitives/is_null_char.l", "#f");
+  run_example("examples/unary_primitives/add1.l", "301");
+  run_example("examples/unary_primitives/sub1.l", "299");
+  run_example("examples/unary_primitives/char_to_integer.l", "65");
+  run_example("examples/unary_primitives/integer_to_char.l", "'A'");
+  run_example("examples/unary_primitives/is_integer_true.l", "#t");
+  run_example("examples/unary_primitives/is_integer_nil.l", "#f");
+  run_example("examples/unary_primitives/is_integer_char.l", "#f");
+  run_example("examples/unary_primitives/is_integer_bool.l", "#f");
+  run_example("examples/unary_primitives/is_bool_true.l", "#t");
+  run_example("examples/unary_primitives/is_bool_false.l", "#t");
+  run_example("examples/unary_primitives/is_bool_fixnum.l", "#f");
+  run_example("examples/unary_primitives/is_bool_char.l", "#f");
+  run_example("examples/unary_primitives/is_bool_nil.l", "#f");
+  run_example("examples/unary_primitives/is_char_true.l", "#t");
+  run_example("examples/unary_primitives/is_char_fixnum.l", "#f");
+  run_example("examples/unary_primitives/is_char_bool.l", "#f");
+  run_example("examples/unary_primitives/is_char_nil.l", "#f");
+
   return failures;
 }

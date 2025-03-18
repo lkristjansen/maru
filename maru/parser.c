@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 
-static Maru_Ast* make_bool_ast(Maru_Arena *arena, int value)
+static Maru_Ast *make_bool_ast(Maru_Arena *arena, int value)
 {
   Maru_Ast *bool_ast = Maru_Arena_alloc(arena, sizeof(Maru_Ast));
   bool_ast->kind = Maru_AstKind_bool;
@@ -35,7 +35,7 @@ static Maru_Ast *make_fixnum_ast(Maru_Arena *arena, int64_t value)
   return fixnum_ast;
 }
 
-static Maru_Ast* make_cons_ast(Maru_Arena *arena, Maru_Ast* car, Maru_Ast *cdr)
+static Maru_Ast *make_cons_ast(Maru_Arena *arena, Maru_Ast *car, Maru_Ast *cdr)
 {
   Maru_Ast *cons_ast = Maru_Arena_alloc(arena, sizeof(Maru_Ast));
   cons_ast->kind = Maru_AstKind_cons;
@@ -52,7 +52,8 @@ static Maru_Ast *make_symbol_ast(Maru_Arena *arena, Maru_String symbol)
   return symbol_ast;
 }
 
-typedef struct Maru_Parser {
+typedef struct Maru_Parser
+{
   Maru_Arena *arena;
   Maru_String text;
   size_t index;
@@ -105,8 +106,8 @@ static Maru_Ast *parse_cons(Maru_Parser *parser)
     error("unexpected eof.");
 
   char ch = current(parser);
-  
-  // TODO(lkr): handle nil somewhere else? 
+
+  // TODO(lkr): handle nil somewhere else?
   if (ch == ')')
     return make_nil_ast(parser->arena);
 
@@ -154,11 +155,11 @@ static Maru_Ast *parse_fixnum(Maru_Parser *parser)
   if (ch == '-')
     next(parser);
 
-  while(isdigit(current(parser))!=0)
+  while (isdigit(current(parser)) != 0)
     next(parser);
 
   size_t size = parser->index - start_index;
-  char *cstr = Maru_Arena_alloc(parser->arena, size+1);
+  char *cstr = Maru_Arena_alloc(parser->arena, size + 1);
   strncpy(cstr, &parser->text.cstr[start_index], size);
   cstr[size] = '\0';
   int value = atoi(cstr);
@@ -175,13 +176,13 @@ static Maru_Ast *parse_symbol(Maru_Parser *parser)
   size_t start_index = parser->index;
   char ch = current(parser);
 
-  while(legal_symbol_char(ch) || isdigit(ch))
+  while (legal_symbol_char(ch) || isdigit(ch))
   {
     next(parser);
     ch = current(parser);
   }
 
-  Maru_String symbol = { 0 };
+  Maru_String symbol = {0};
   symbol.cstr = Maru_Arena_alloc(parser->arena, parser->index - start_index + 1);
   symbol.size = parser->index - start_index + 1;
   strncpy(symbol.cstr, parser->text.cstr + start_index, parser->index - start_index);
@@ -208,7 +209,7 @@ static Maru_Ast *parse_expr(Maru_Parser *parser)
     return parse_cons(parser);
   else if (ch == '\'')
     return parse_char(parser);
-  else if (isdigit(ch) || (ch=='-' && isdigit(peek(parser))))
+  else if (isdigit(ch) || (ch == '-' && isdigit(peek(parser))))
     return parse_fixnum(parser);
   else if (legal_symbol_char(ch))
     return parse_symbol(parser);
@@ -216,7 +217,7 @@ static Maru_Ast *parse_expr(Maru_Parser *parser)
   error("unexpected token '%c'.", ch);
 }
 
-Maru_Ast* Maru_parse(Maru_Arena *arena, Maru_String input)
+Maru_Ast *Maru_parse(Maru_Arena *arena, Maru_String input)
 {
   Maru_Parser parser = {0};
   parser.arena = arena;
